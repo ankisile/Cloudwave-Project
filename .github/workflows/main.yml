@@ -40,7 +40,7 @@ jobs:
         run: ./gradlew clean build
         working-directory: ${{env.working-directory}}
       - name: ✨Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v3
+        uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-region: ap-northeast-2
           role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}   
