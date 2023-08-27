@@ -22,7 +22,7 @@ jobs:
           java-version: '11'
       - name: ✨Copy application.properties
         run: |
-          mkidr ./src/main/resources
+          mkdir ./src/main/resources
           touch ./src/main/resources/application.properties
           echo "${{env.APPLICATION}}" > ./src/main/resources/application.properties
       - uses: actions/upload-artifact@v2
