@@ -1,0 +1,58 @@
+name: Build and Deploy to Dev
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    env: 
+      working-directory: ./
+      APPLICATION: ${{secrets.MAINAPPLICATION}}
+    steps:
+      - name: ✨Checkout code
+        uses: actions/checkout@v2
+      - name: ✨Set up Java
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '11'
+      - name: ✨Copy application.properties
+        run: |
+          mkdir ./src/main/resources
+          touch ./src/main/resources/application.properties
+          echo "${{env.APPLICATION}}" > ./src/main/resources/application.properties
+      - uses: actions/upload-artifact@v2
+        with:
+          name: application.properties
+          path: ./src/main/resources/application.properties
+      - name: Grant execute permission gradlew
+        run: chmod +x gradlew
+        working-directory: ${{env.working-directory}}
+      - name: Build with gradle
+        run: ./gradlew clean build
+        working-directory: ${{env.working-directory}}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          aws-region: ap-northeast-2
+          role-to-assume: ${{ secrets.ROLE_TO_ASSUME }}   
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+      - name: Set short sha
+        id: sha_short
+        run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: backend-repository
+          IMAGE_TAG: ${{ steps.sha_short.outputs.sha_short }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
