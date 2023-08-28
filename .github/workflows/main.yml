@@ -54,7 +54,7 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: backend-repository
+          ECR_REPOSITORY: seoul-repository
           IMAGE_TAG: ${{ steps.sha_short.outputs.sha_short }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
