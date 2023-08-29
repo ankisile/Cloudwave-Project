@@ -2,9 +2,9 @@ name: Build and Deploy to Dev
 
 on:
   push:
-    branches: [main]
+    branches: [eu]
   pull_request:
-    branches: [main]
+    branches: [eu]
 
 
 jobs:
