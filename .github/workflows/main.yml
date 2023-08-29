@@ -47,10 +47,10 @@ jobs:
       - name: ✨Login to Amazon ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
-      - name: Set short sha
+      - name: ✨Set short sha
         id: sha_short
         run: echo "sha_short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-      - name: Build, tag, and push image to Amazon ECR
+      - name: ✨Build, tag, and push image to Amazon ECR
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
@@ -60,10 +60,6 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
-  updateYaml:
-    runs-on: ubuntu-latest
-    needs: build
-    steps:
       - name: 🧨 Checkout
         uses: actions/checkout@v3
         with:
@@ -71,7 +67,7 @@ jobs:
           token: ${{ secrets.TOKEN_GITHUB }}
       - name: 🧨 Change Docker tag
         run: |
-          sed -i "s/eu-central-repository:.*/eu-central-repository:${{ build.steps.sha_short.outputs.sha_short }}/g" cloudwave-was.yaml
+          sed -i "s/eu-central-repository:.*/eu-central-repository:${{ steps.sha_short.outputs.sha_short }}/g" cloudwave-was.yaml
           git config --global user.email "ankisile@gmail.com"
           git config --global user.name "ankisile"
           git commit -am "triggered by github action"
