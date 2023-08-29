@@ -2,9 +2,9 @@ name: Build and Deploy to Dev
 
 on:
   push:
-    branches: [main]
+    branches: [us]
   pull_request:
-    branches: [main]
+    branches: [us]
 
 
 jobs:
@@ -15,7 +15,7 @@ jobs:
       contents: read
     env: 
       working-directory: ./
-      APPLICATION: ${{secrets.FRANKFRUTAPPLICATION}}
+      APPLICATION: ${{secrets.USAPPLICATION}}
     steps:
       - name: ✨Checkout code
         uses: actions/checkout@v2
@@ -67,7 +67,7 @@ jobs:
           token: ${{ secrets.TOKEN_GITHUB }}
       - name: 🧨 Change Docker tag
         run: |
-          sed -i "s/eu-central-repository:.*/eu-central-repository:${{ steps.sha_short.outputs.sha_short }}/g" cloudwave-was.yaml
+          sed -i "s/us-east-repository:.*/us-east-repository:${{ steps.sha_short.outputs.sha_short }}/g" cloudwave-was.yaml
           git config --global user.email "ankisile@gmail.com"
           git config --global user.name "ankisile"
           git commit -am "triggered by github action"
