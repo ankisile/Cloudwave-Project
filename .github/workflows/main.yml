@@ -71,7 +71,7 @@ jobs:
           token: ${{ secrets.TOKEN_GITHUB }}
       - name: 🧨 Change Docker tag
         run: |
-          sed -i "s/eu-central-repository:.*/eu-central-repository:${{ build.steps.sha_short.outputs.sha_short }}/g" deploy.yaml
+          sed -i "s/eu-central-repository:.*/eu-central-repository:${{ build.steps.sha_short.outputs.sha_short }}/g" cloudwave-was.yaml
           git config --global user.email "ankisile@gmail.com"
           git config --global user.name "ankisile"
           git commit -am "triggered by github action"
